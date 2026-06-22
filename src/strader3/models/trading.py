@@ -91,6 +91,7 @@ class Order:
     created_at: datetime = field(default_factory=datetime.now)
     submitted_at: Optional[datetime] = None
     filled_at: Optional[datetime] = None
+    cancelled_at: Optional[datetime] = None
     signal_id: str = ""
     parent_order_id: str = ""
     rejection_reason: str = ""
