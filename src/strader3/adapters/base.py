@@ -5,8 +5,8 @@ Core trading logic (strategies, RMS, portfolio manager) depends only on these in
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable
 
 from strader3.models import (
     BarData,

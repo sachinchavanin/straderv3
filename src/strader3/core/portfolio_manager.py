@@ -4,8 +4,8 @@ Manages per-symbol state machines, allocates capital, and tracks positions.
 """
 
 import asyncio
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable, Optional
 
 import structlog
 
@@ -16,8 +16,6 @@ from strader3.models.portfolio import (
     SymbolState,
 )
 from strader3.models.trading import (
-    Order,
-    OrderStatus,
     Position,
     PositionState,
     Signal,

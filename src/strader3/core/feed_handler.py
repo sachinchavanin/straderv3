@@ -7,8 +7,8 @@ data to consumers.
 
 import asyncio
 from collections import defaultdict, deque
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable, Optional
 
 import structlog
 
@@ -39,7 +39,7 @@ class BarAggregator:
     def on_bar(self, callback: Callable[[BarData], None]) -> None:
         self._bar_callbacks.append(callback)
 
-    def process_tick(self, tick: TickData) -> Optional[BarData]:
+    def process_tick(self, tick: TickData) -> BarData | None:
         """Process tick and emit bar if interval complete."""
         symbol = tick.symbol
         bar_start = self._get_bar_start(tick.timestamp)
@@ -135,12 +135,12 @@ class FeedHandler:
 
         # Metrics
         self._tick_count = 0
-        self._last_tick_time: Optional[datetime] = None
+        self._last_tick_time: datetime | None = None
         self._reconnect_count = 0
 
         # Gap fill state
         self._gap_fill_pending = False
-        self._last_disconnect_time: Optional[datetime] = None
+        self._last_disconnect_time: datetime | None = None
 
         # Wire up feeder callbacks
         self.feeder.on_tick(self._on_tick)

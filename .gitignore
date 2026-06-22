@@ -1,11 +1,11 @@
+# straderv3 worktree - ignore build artifacts and data
+.venv/
 __pycache__/
 *.pyc
-.venv/
-.env
-data/
 *.egg-info/
-dist/
-build/
+data/
 .pytest_cache/
-.coverage
-htmlcov/
+*.db
+check_*.py
+verify_*.py
+.worktrees/

@@ -5,10 +5,10 @@ Strategies emit broker-agnostic signals that flow to Portfolio Manager.
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import pandas_ta as ta
 import structlog
@@ -310,12 +310,12 @@ class STRsiTrendRider(BaseStrategy):
             )
             self.emit_signal(signal)
 
-    def _calculate_indicators(self, df: pd.DataFrame) -> Optional[dict]:
+    def _calculate_indicators(self, df: pd.DataFrame) -> dict | None:
         """Calculate strategy indicators using pandas-ta."""
         try:
             # Ensure float64 dtype for pandas-ta compatibility
             h = df["high"].astype("float64")
-            l = df["low"].astype("float64")
+            low = df["low"].astype("float64")
             c = df["close"].astype("float64")
 
             # RSI
@@ -325,7 +325,7 @@ class STRsiTrendRider(BaseStrategy):
             rsi = float(rsi_series.iloc[-1])
 
             # Supertrend
-            st = ta.supertrend(h, l, c, length=self.st_period, multiplier=self.st_multiplier)
+            st = ta.supertrend(h, low, c, length=self.st_period, multiplier=self.st_multiplier)
             if st is None or st.empty:
                 return None
 
@@ -333,7 +333,7 @@ class STRsiTrendRider(BaseStrategy):
             supertrend_dir = int(st[st_dir_col].iloc[-1])
 
             # ATR
-            atr_series = ta.atr(h, l, c, length=self.atr_period)
+            atr_series = ta.atr(h, low, c, length=self.atr_period)
             if atr_series is None or atr_series.empty:
                 return None
             atr = float(atr_series.iloc[-1])
@@ -361,9 +361,9 @@ class STRsiTrendRider(BaseStrategy):
             )
 
         h = df["high"].astype("float64")
-        l = df["low"].astype("float64")
+        low = df["low"].astype("float64")
         c = df["close"].astype("float64")
-        atr_series = ta.atr(h, l, c, length=self.atr_period)
+        atr_series = ta.atr(h, low, c, length=self.atr_period)
         if atr_series is None or atr_series.empty:
             return (
                 entry_price * 0.99
@@ -391,9 +391,9 @@ class STRsiTrendRider(BaseStrategy):
             )
 
         h = df["high"].astype("float64")
-        l = df["low"].astype("float64")
+        low = df["low"].astype("float64")
         c = df["close"].astype("float64")
-        atr_series = ta.atr(h, l, c, length=self.atr_period)
+        atr_series = ta.atr(h, low, c, length=self.atr_period)
         if atr_series is None or atr_series.empty:
             return (
                 entry_price * 1.02

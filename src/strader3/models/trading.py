@@ -2,32 +2,31 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 from uuid import uuid4
 
 
-class SignalType(str, Enum):
+class SignalType(StrEnum):
     BUY = "BUY"
     SELL = "SELL"
     EXIT_LONG = "EXIT_LONG"
     EXIT_SHORT = "EXIT_SHORT"
 
 
-class OrderType(str, Enum):
+class OrderType(StrEnum):
     MARKET = "MARKET"
     LIMIT = "LIMIT"
     SL = "SL"
     SL_MARKET = "SL_MARKET"
 
 
-class ProductType(str, Enum):
+class ProductType(StrEnum):
     MIS = "MIS"
     CNC = "CNC"
     NRML = "NRML"
 
 
-class OrderStatus(str, Enum):
+class OrderStatus(StrEnum):
     PENDING = "PENDING"
     SUBMITTED = "SUBMITTED"
     OPEN = "OPEN"
@@ -39,7 +38,7 @@ class OrderStatus(str, Enum):
     ERROR = "ERROR"
 
 
-class PositionState(str, Enum):
+class PositionState(StrEnum):
     IDLE = "IDLE"
     PENDING_ENTRY = "PENDING_ENTRY"
     ACTIVE = "ACTIVE"
@@ -89,9 +88,9 @@ class Order:
     status: OrderStatus = OrderStatus.PENDING
     average_price: float = 0.0
     created_at: datetime = field(default_factory=datetime.now)
-    submitted_at: Optional[datetime] = None
-    filled_at: Optional[datetime] = None
-    cancelled_at: Optional[datetime] = None
+    submitted_at: datetime | None = None
+    filled_at: datetime | None = None
+    cancelled_at: datetime | None = None
     signal_id: str = ""
     parent_order_id: str = ""
     rejection_reason: str = ""
@@ -121,13 +120,13 @@ class Position:
     average_price: float = 0.0
     current_price: float = 0.0
     entry_order_id: str = ""
-    entry_time: Optional[datetime] = None
+    entry_time: datetime | None = None
     entry_signal_id: str = ""
     strategy_name: str = ""
     stop_loss: float = 0.0
     target: float = 0.0
     trailing_stop: float = 0.0
-    max_holding_until: Optional[datetime] = None
+    max_holding_until: datetime | None = None
     realized_pnl: float = 0.0
     unrealized_pnl: float = 0.0
     sector: str = ""
@@ -157,11 +156,11 @@ class Trade:
     id: str = field(default_factory=lambda: str(uuid4()))
     symbol: str = ""
     strategy_name: str = ""
-    entry_time: Optional[datetime] = None
+    entry_time: datetime | None = None
     entry_price: float = 0.0
     entry_quantity: int = 0
     entry_order_id: str = ""
-    exit_time: Optional[datetime] = None
+    exit_time: datetime | None = None
     exit_price: float = 0.0
     exit_quantity: int = 0
     exit_order_id: str = ""

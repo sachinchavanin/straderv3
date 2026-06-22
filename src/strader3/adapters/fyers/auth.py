@@ -92,7 +92,7 @@ class FyersAuth:
         try:
             if not os.path.exists(self.TOKEN_STORE_PATH):
                 return
-            with open(self.TOKEN_STORE_PATH, "r", encoding="utf-8") as f:
+            with open(self.TOKEN_STORE_PATH, encoding="utf-8") as f:
                 data = json.load(f)
             self._access_token = data.get("access_token")
             self._refresh_token = data.get("refresh_token")

@@ -7,14 +7,30 @@ from strader3.core.portfolio_manager import (
     InvalidTransitionError,
     PortfolioManager,
 )
+from strader3.core.repository import (
+    DailyPnlRepository,
+    MigrationManager,
+    OrderRepository,
+    PositionRepository,
+    SignalRepository,
+    TradeRepository,
+)
 from strader3.core.risk_manager import RiskManager
+from strader3.core.trading_engine import TradingEngine
 
 __all__ = [
     "CapitalAllocator",
+    "DailyPnlRepository",
     "InvalidTransitionError",
+    "MigrationManager",
     "OrderManager",
+    "OrderRepository",
     "PortfolioManager",
+    "PositionRepository",
     "RiskManager",
+    "SignalRepository",
+    "TradeRepository",
+    "TradingEngine",
     "init_db",
 ]
 

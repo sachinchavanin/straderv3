@@ -6,10 +6,8 @@ and simulated fills for paper-trade mode.
 
 import asyncio
 import os
-import sqlite3
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, Optional
-from uuid import uuid4
 
 import aiosqlite
 import structlog
@@ -127,7 +125,7 @@ class OrderManager:
     # Signal processing
     # ------------------------------------------------------------------
 
-    async def process_signal(self, signal: Signal) -> Optional[Order]:
+    async def process_signal(self, signal: Signal) -> Order | None:
         """Process RMS-approved signal into an order.
 
         Returns:
@@ -349,7 +347,7 @@ class OrderManager:
     # Queries
     # ------------------------------------------------------------------
 
-    def get_order(self, order_id: str) -> Optional[Order]:
+    def get_order(self, order_id: str) -> Order | None:
         return self._orders.get(order_id)
 
     def get_orders_by_status(self, status: OrderStatus) -> list[Order]:

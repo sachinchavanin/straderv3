@@ -2,10 +2,10 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 
-class SymbolState(str, Enum):
+class SymbolState(StrEnum):
     """Per-symbol state machine."""
 
     IDLE = "IDLE"

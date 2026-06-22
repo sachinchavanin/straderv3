@@ -1,8 +1,8 @@
 """Fyers market data feeder implementation."""
 
 import asyncio
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, Optional
 
 import structlog
 
@@ -40,7 +40,7 @@ class FyersFeeder(DataFeeder):
 
         self._connected = False
         self._subscribed_symbols: set[str] = set()
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._loop: asyncio.AbstractEventLoop | None = None
 
         # Callbacks
         self._tick_callbacks: list[Callable[[TickData], None]] = []

@@ -8,7 +8,7 @@ from datetime import datetime, time
 
 import structlog
 
-from strader3.models.trading import Order, Position, Signal, SignalType
+from strader3.models.trading import Position, Signal, SignalType
 
 logger = structlog.get_logger(__name__)
 
