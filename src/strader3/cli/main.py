@@ -1,9 +1,11 @@
 """CLI entry points for straderv3.
 
 Commands:
-    python -m strader3 run      Start the trading bot (live or paper mode)
+    python -m strader3 run       Start the trading bot (live or paper mode)
     python -m strader3 backtest  Run backtest on historical data
     python -m strader3 paper     Start in paper-trade mode (explicit)
+    python -m strader3 status    Show engine status (requires running engine)
+    python -m strader3 report    Show paper-trade daily report
 """
 
 import argparse
@@ -13,7 +15,6 @@ from pathlib import Path
 
 import structlog
 
-# Ensure src is on the path when running as module
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from strader3.utils.config import get_nested, load_config
@@ -24,7 +25,7 @@ def _parse_args() -> argparse.Namespace:
     """Parse CLI arguments."""
     parser = argparse.ArgumentParser(
         prog="straderv3",
-        description="straderv3 — Retail Algorithmic Trading System",
+        description="straderv3 -- Retail Algorithmic Trading System",
     )
     parser.add_argument(
         "--config",
@@ -73,6 +74,18 @@ def _parse_args() -> argparse.Namespace:
     # paper
     subparsers.add_parser("paper", help="Start in paper-trade mode")
 
+    # status
+    subparsers.add_parser("status", help="Show engine status")
+
+    # report
+    report_parser = subparsers.add_parser("report", help="Show paper-trade daily report")
+    report_parser.add_argument(
+        "--date",
+        type=str,
+        default=None,
+        help="Report date (ISO format, default: today)",
+    )
+
     return parser.parse_args()
 
 
@@ -80,13 +93,11 @@ async def _cmd_run(args: argparse.Namespace) -> None:
     """Execute the 'run' command."""
     config = load_config(args.config)
 
-    # Override db path if specified
     if args.db:
         if "database" not in config:
             config["database"] = {}
         config["database"]["path"] = args.db
 
-    # Setup logging
     log_level = "DEBUG" if args.verbose else get_nested(config, "logging.level", "INFO")
     log_dir = "data/logs"
     setup_logging(level=log_level, log_dir=log_dir)
@@ -147,13 +158,66 @@ async def _cmd_paper(args: argparse.Namespace) -> None:
         await engine.shutdown()
 
 
+async def _cmd_status(args: argparse.Namespace) -> None:
+    """Execute the 'status' command."""
+    config = load_config(args.config)
+
+    if args.db:
+        if "database" not in config:
+            config["database"] = {}
+        config["database"]["path"] = args.db
+
+    log_level = "DEBUG" if args.verbose else get_nested(config, "logging.level", "INFO")
+    setup_logging(level=log_level, log_dir="data/logs")
+
+    from strader3.core.trading_engine import TradingEngine
+
+    engine = TradingEngine(config=config)
+    status = engine.get_status()
+
+    print("=== straderv3 Engine Status ===")
+    print(f"Running:           {status['running']}")
+    print(f"Warm-up Complete:  {status['warm_up_complete']}")
+    print(f"Strategy:          {status['strategy']}")
+    print(f"Strategy Enabled:  {status['strategy_enabled']}")
+    print(f"Market Phase:      {status['market_phase']}")
+    print(f"Market Status:     {status['market_status']}")
+    print(f"Can Enter:         {status['can_enter']}")
+    print(f"Force Exit Active: {status['force_exit_active']}")
+    print(f"Watchlist Symbols: {status['watchlist_symbols']}")
+    print(f"Watchlist Reloads: {status['watchlist_reloads']}")
+    print(f"Alerts Configured: {status['alert_metrics']['configured']}")
+    print(f"DB Path:           {status['db_path']}")
+
+
+async def _cmd_report(args: argparse.Namespace) -> None:
+    """Execute the 'report' command."""
+    config = load_config(args.config)
+
+    if args.db:
+        if "database" not in config:
+            config["database"] = {}
+        config["database"]["path"] = args.db
+
+    log_level = "DEBUG" if args.verbose else get_nested(config, "logging.level", "INFO")
+    setup_logging(level=log_level, log_dir="data/logs")
+
+    from strader3.notifier.paper_trade_validator import PaperTradeValidator
+
+    db_path = get_nested(config, "database.path", "data/trades.db")
+    validator = PaperTradeValidator(db_path)
+    report = await validator.generate_daily_report(args.date)
+    text = validator.format_report_text(report)
+    print(text)
+
+
 def main() -> None:
     """Main entry point."""
     args = _parse_args()
 
     if args.command is None:
         print("Usage: python -m strader3 <command> [options]")
-        print("Commands: run, backtest, paper")
+        print("Commands: run, backtest, paper, status, report")
         sys.exit(1)
 
     if args.command == "run":
@@ -162,6 +226,10 @@ def main() -> None:
         asyncio.run(_cmd_backtest(args))
     elif args.command == "paper":
         asyncio.run(_cmd_paper(args))
+    elif args.command == "status":
+        asyncio.run(_cmd_status(args))
+    elif args.command == "report":
+        asyncio.run(_cmd_report(args))
     else:
         print(f"Unknown command: {args.command}")
         sys.exit(1)
