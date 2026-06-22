@@ -1,0 +1,209 @@
+# =============================================================================
+# straderv3 Configuration
+# =============================================================================
+
+trade_mode: paper  # "paper" | "live"
+
+# =============================================================================
+# BROKER CREDENTIALS (via .env, NOT this file)
+# =============================================================================
+
+# =============================================================================
+# MARKET DATA
+# =============================================================================
+market_data:
+  provider: fyers
+
+  watchlist:
+    - NSE:TCS-EQ
+    - NSE:INFY-EQ
+    - NSE:HDFCBANK-EQ
+    - NSE:ICICIBANK-EQ
+    - NSE:HINDUNILVR-EQ
+    - NSE:ITC-EQ
+    - NSE:SBIN-EQ
+    - NSE:BHARTIARTL-EQ
+    - NSE:KOTAKBANK-EQ
+    - NSE:LT-EQ
+
+  bar_interval: 1m
+
+  gap_fill:
+    enabled: true
+    lookback_minutes: 15
+
+  websocket:
+    reconnect_delay_initial: 1.0
+    reconnect_delay_max: 60.0
+    reconnect_delay_multiplier: 2.0
+    heartbeat_interval: 30
+    max_reconnect_attempts: 100
+
+# =============================================================================
+# STRATEGY
+# =============================================================================
+strategies:
+  enabled:
+    - st_rsi_trend_rider
+
+  warm_up:
+    enabled: true
+    lookback_bars: 100
+    safety_buffer: 10
+    timeframe: "5m"
+
+  trade_pivot_log:
+    enabled: true
+    path: "data/logs/trade_pivots.csv"
+
+  st_rsi_trend_rider:
+    enabled: true
+    supertrend_period: 10
+    supertrend_multiplier: 3.0
+    rsi_period: 14
+    rsi_oversold: 35
+    rsi_overbought: 65
+    atr_period: 14
+    stop_loss_atr_multiplier: 1.5
+    target_atr_multiplier: 2.0
+    max_holding_minutes: 180
+
+# =============================================================================
+# PORTFOLIO MANAGEMENT
+# =============================================================================
+portfolio:
+  allocation_pct: 50.0
+  max_active_trades: 3
+  sizing_mode: "ALLOCATION_BASED"
+  risk_per_trade_pct: 0.5
+  slippage_buffer_pct: 0.1
+  max_sector_exposure_pct: 30.0
+  cooldown_seconds: 300
+
+# =============================================================================
+# RISK MANAGEMENT
+# =============================================================================
+risk:
+  max_daily_loss_pct: 1.0
+  max_position_value: 100000
+  max_total_exposure_pct: 50.0
+  max_order_value: 50000
+  max_quantity_per_order: 1000
+  slippage_assumption_pct: 0.01
+  entry_start_time: "09:20"
+  entry_end_time: "15:00"
+  force_exit_time: "15:10"
+  zero_depth_threshold: 0
+
+# =============================================================================
+# DISCORD NOTIFICATIONS
+# =============================================================================
+discord:
+  enabled: true
+  webhook_url: null
+
+  cadence:
+    out_of_hours: 60
+    market_idle: 5
+    in_trade: 5
+    critical: 1
+
+  alerts:
+    entry: true
+    exit: true
+    stop_loss_hit: true
+    target_hit: true
+    daily_summary: true
+    risk_mode_change: true
+    pnl_threshold: true
+    pnl_threshold_inr: 1000
+
+  bot:
+    enabled: false
+    token: null
+    prefix: "!"
+    allowed_commands:
+      - status
+      - stop
+      - resume
+      - squareoff
+      - pnl
+
+# =============================================================================
+# DATABASE
+# =============================================================================
+database:
+  path: "data/trades.db"
+
+# =============================================================================
+# TRADING SCHEDULE
+# =============================================================================
+schedule:
+  market_open: "09:15"
+  market_close: "15:30"
+
+  holidays:
+    - "2026-01-26"
+    - "2026-03-10"
+    - "2026-03-17"
+    - "2026-04-02"
+    - "2026-04-03"
+    - "2026-04-14"
+    - "2026-04-21"
+    - "2026-05-25"
+    - "2026-07-07"
+    - "2026-08-15"
+    - "2026-10-02"
+    - "2026-10-20"
+    - "2026-10-21"
+    - "2026-11-09"
+    - "2026-11-10"
+    - "2026-11-30"
+    - "2026-12-25"
+
+# =============================================================================
+# BACKTESTING
+# =============================================================================
+backtest:
+  stt_intraday_sell_pct: 0.025
+  stt_delivery_pct: 0.1
+  brokerage_per_order: 20
+  gst_pct: 18.0
+  sebi_charges_pct: 0.0001
+  stamp_duty_pct: 0.003
+  exchange_txn_pct: 0.00345
+  slippage_pct: 0.01
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+logging:
+  level: INFO
+  format: json
+  rotate_size_mb: 50
+  rotate_count: 10
+  files:
+    system: logs/system.log
+    trades: logs/trades.log
+    errors: logs/errors.log
+  console: true
+
+# =============================================================================
+# SECTOR MAPPING
+# =============================================================================
+sectors:
+  banking:
+    - NSE:HDFCBANK-EQ
+    - NSE:ICICIBANK-EQ
+    - NSE:SBIN-EQ
+    - NSE:KOTAKBANK-EQ
+  it:
+    - NSE:TCS-EQ
+    - NSE:INFY-EQ
+  fmcg:
+    - NSE:HINDUNILVR-EQ
+    - NSE:ITC-EQ
+  telecom:
+    - NSE:BHARTIARTL-EQ
+  infra:
+    - NSE:LT-EQ

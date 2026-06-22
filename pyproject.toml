@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "straderv3"
+version = "0.1.0"
+description = "Retail Algorithmic Trading System for Indian Markets (straderv3)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Proprietary"}
+authors = [
+    {name = "Trading Team"}
+]
+dependencies = [
+    "fyers-apiv3>=3.0.0",
+    "pyotp>=2.9.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "aiosqlite>=0.19.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.1",
+    "aiohttp>=3.9.0",
+    "structlog>=23.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "types-PyYAML>=6.0.0",
+]
+
+[project.scripts]
+straderv3 = "strader3.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v"
