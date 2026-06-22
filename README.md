@@ -1,2 +1,5 @@
 # straderv3
-NSE Auto-Trader v3 — Alert-first trading bot with Discord integration
+
+Retail Algorithmic Trading System for Indian Markets.
+
+Phase 1: Feed Handler + Signal Engine (STRsiTrendRider)
