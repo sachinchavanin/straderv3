@@ -34,7 +34,6 @@ __all__ = [
     "init_db",
 ]
 
-# Alpha engine requires pandas-ta (Python 3.12+); import on demand.
 try:
     from strader3.core.alpha_engine import BaseStrategy, STRsiTrendRider  # noqa: F401
 
