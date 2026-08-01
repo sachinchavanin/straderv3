@@ -1,10 +1,22 @@
 """Tests for MarketPhaseChecker — NSE market phases and time guards."""
 
 from datetime import date, time, datetime
+from unittest.mock import patch
 
 import pytest
 
 from strader3.notifier.market_phase import MarketPhase, MarketPhaseChecker, MarketStatus
+
+
+@pytest.fixture(autouse=True)
+def mock_trading_day(monkeypatch):
+    """Lock tests to Wed 8 July 2026 so they pass on any calendar day."""
+    fixed_date = date(2026, 7, 8)
+    fixed_dt = datetime(2026, 7, 8, 10, 0)
+    import strader3.notifier.market_phase as mp_mod
+    monkeypatch.setattr(mp_mod, "date", type("date", (), {"today": staticmethod(lambda: fixed_date), "fromisoformat": date.fromisoformat, "weekday": date.weekday})())
+    monkeypatch.setattr(mp_mod, "datetime", type("datetime", (), {"now": staticmethod(lambda tz=None: fixed_dt), "combine": datetime.combine})())
+    yield
 
 
 class TestMarketPhaseCheckerInit:

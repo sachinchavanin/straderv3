@@ -39,6 +39,16 @@ def risk_manager() -> RiskManager:
     return rm
 
 
+@pytest.fixture(autouse=True)
+def mock_datetime_for_risk_tests():
+    """Lock tests to Wed 8 July 2026 10:00 so time guards pass on any calendar day."""
+    fixed_dt = datetime(2026, 7, 8, 10, 0)
+    with patch("strader3.core.risk_manager.datetime") as mock_dt:
+        mock_dt.now.return_value = fixed_dt
+        mock_dt.side_effect = lambda *a, **kw: __import__("datetime").datetime(*a, **kw)
+        yield
+
+
 @pytest.fixture
 def sample_signal() -> Signal:
     return Signal(
